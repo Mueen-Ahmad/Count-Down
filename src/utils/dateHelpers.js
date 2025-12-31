@@ -94,45 +94,38 @@ export function encodeCountdownData(data) {
  * @returns {Object|null} Decoded countdown data or null if invalid
  */
 export function decodeCountdownData(params) {
-    try {
-        // Safe check for required params
-        // Check if params object exists and has required keys
-        if (!params || !params.has || (!params.has('name') && !params.get('name'))) {
-            return null;
-        }
+    if (!params) return null;
 
-        // Helper for safe decoding
+    try {
         const safeAtob = (str) => {
+            if (!str) return '';
             try {
                 return atob(str);
             } catch (e) {
-                console.warn('Failed to decode base64:', str);
-                return str; // Return raw string if decode fails
-            }
-        };
-
-        const safeDecodeURI = (str) => {
-            try {
-                return decodeURIComponent(str);
-            } catch (e) {
+                console.warn('Decode failed:', str);
                 return str;
             }
         };
 
-        const nameParam = params.get('name');
-        const dateParam = params.get('date');
-        const imgParam = params.get('img');
-        const themeParam = params.get('theme');
+        const safeDecodeURI = (str) => {
+            try { return decodeURIComponent(str); } catch (e) { return str; }
+        };
 
-        // Decode Name: URI Decode -> Base64 Decode -> URI Decode (just in case)
-        // Note: encodeCountdownData does: btoa(encodeURIComponent(name))
+        // Handle both URLSearchParams and plain objects if needed
+        const has = (key) => params.has ? params.has(key) : !!params[key];
+        const get = (key) => params.get ? params.get(key) : params[key];
+
+        if (!has('name') && !has('date')) {
+            return null;
+        }
+
+        const nameParam = get('name');
+        const dateParam = get('date');
+        const imgParam = get('img');
+        const themeParam = get('theme');
+
         const name = nameParam ? safeDecodeURI(safeAtob(nameParam)) : 'Event';
-
-        // Decode Date: Base64 Decode
-        // Note: encodeCountdownData does: btoa(date)
         const date = dateParam ? safeAtob(dateParam) : new Date().toISOString();
-
-        // Decode Image: Base64 Decode if present
         const bgImg = imgParam ? safeAtob(imgParam) : '';
 
         return {
@@ -142,8 +135,8 @@ export function decodeCountdownData(params) {
             bgImg
         };
     } catch (error) {
-        console.error('Error decoding countdown data:', error);
-        return null; // Return null if catastrophic failure
+        console.error('Error in decodeCountdownData:', error);
+        return null;
     }
 }
 
