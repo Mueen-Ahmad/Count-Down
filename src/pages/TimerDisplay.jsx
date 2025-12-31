@@ -80,18 +80,7 @@ export default function TimerDisplay() {
     };
 
     if (!countdown) {
-        return (
-            <div className="min-h-[60vh] flex flex-col items-center justify-center text-slate-400 font-mono animate-pulse">
-                <div className="text-4xl mb-4">⏳</div>
-                <p>Loading countdown details...</p>
-                <button
-                    onClick={() => navigate('/')}
-                    className="mt-8 text-sm underline hover:text-purple-400"
-                >
-                    Return to Home
-                </button>
-            </div>
-        );
+        return null;
     }
 
     const getThemeClasses = () => {

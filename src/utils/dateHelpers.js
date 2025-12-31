@@ -94,48 +94,19 @@ export function encodeCountdownData(data) {
  * @returns {Object|null} Decoded countdown data or null if invalid
  */
 export function decodeCountdownData(params) {
-    if (!params) return null;
-
     try {
-        const safeAtob = (str) => {
-            if (!str) return '';
-            try {
-                return atob(str);
-            } catch (e) {
-                console.warn('Decode failed:', str);
-                return str;
-            }
-        };
-
-        const safeDecodeURI = (str) => {
-            try { return decodeURIComponent(str); } catch (e) { return str; }
-        };
-
-        // Handle both URLSearchParams and plain objects if needed
-        const has = (key) => params.has ? params.has(key) : !!params[key];
-        const get = (key) => params.get ? params.get(key) : params[key];
-
-        if (!has('name') && !has('date')) {
+        if (!params.has('name') || !params.has('date')) {
             return null;
         }
 
-        const nameParam = get('name');
-        const dateParam = get('date');
-        const imgParam = get('img');
-        const themeParam = get('theme');
-
-        const name = nameParam ? safeDecodeURI(safeAtob(nameParam)) : 'Event';
-        const date = dateParam ? safeAtob(dateParam) : new Date().toISOString();
-        const bgImg = imgParam ? safeAtob(imgParam) : '';
-
         return {
-            name,
-            date,
-            theme: themeParam || 'purple-blue',
-            bgImg
+            name: decodeURIComponent(atob(params.get('name'))),
+            date: atob(params.get('date')),
+            theme: params.get('theme') || 'purple-blue',
+            bgImg: params.get('img') ? atob(params.get('img')) : ''
         };
     } catch (error) {
-        console.error('Error in decodeCountdownData:', error);
+        console.error('Error decoding countdown data:', error);
         return null;
     }
 }
