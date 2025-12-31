@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Count Down | Festive & Personal Timers</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & Outfit -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Outfit:wght@400;700&display=swap"
+        rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Outfit', 'sans-serif'],
+                    },
+                    colors: {
+                        festive: {
+                            gold: '#FFD700',
+                            moon: '#E2E8F0',
+                            deep: '#0F172A',
+                        }
+                    },
+                    backdropBlur: {
+                        xs: '2px',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body
+    class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-300 min-h-screen font-sans">
+
+    <!-- Background Decor -->
+    <div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+        <div
+            class="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-purple-500/20 rounded-full blur-[120px] animate-pulse">
+        </div>
+        <div class="absolute -bottom-[10%] -right-[10%] w-[40%] h-[40%] bg-blue-500/20 rounded-full blur-[120px] animate-pulse"
+            style="animation-delay: 2s;"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 glass-effect border-b border-white/10 dark:border-white/5 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <h1
+                class="text-2xl font-display font-bold bg-gradient-to-r from-purple-400 to-blue-500 bg-clip-text text-transparent flex items-center gap-2">
+                <i data-lucide="timer" class="text-purple-500"></i>
+                Count Down
+            </h1>
+            <div class="flex items-center gap-4">
+                <button id="themeToggle" class="p-2 rounded-full hover:bg-white/10 transition-colors">
+                    <i data-lucide="sun" class="dark:hidden"></i>
+                    <i data-lucide="moon" class="hidden dark:block"></i>
+                </button>
+                <button id="createNavBtn"
+                    class="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white px-5 py-2 rounded-full font-semibold transition-all shadow-lg hover:shadow-purple-500/25 active:scale-95">
+                    Create My Own
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-6 py-12">
+        <!-- Dashboard Section -->
+        <section id="dashboardSection">
+            <header class="mb-12 text-center">
+                <h2 class="text-4xl md:text-5xl font-display font-bold mb-4">Upcoming Celebrations</h2>
+                <p class="text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">Track global festivals or create your
+                    own special moment.</p>
+            </header>
+
+            <div id="eventsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Preset Cards will be injected here via JS -->
+            </div>
+        </section>
+
+        <!-- Create Form Section (Hidden by default) -->
+        <section id="createSection" class="hidden max-w-2xl mx-auto">
+            <div class="glass-card p-8 rounded-3xl border border-white/10">
+                <button id="backBtn"
+                    class="flex items-center gap-2 text-slate-500 hover:text-purple-500 transition-colors mb-6">
+                    <i data-lucide="chevron-left" class="w-5 h-5"></i>
+                    Back to Dashboard
+                </button>
+                <h2 class="text-3xl font-display font-bold mb-8">Create Your Countdown</h2>
+
+                <form id="countdownForm" class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Event Name</label>
+                        <input type="text" id="eventName" required placeholder="e.g. My Birthday"
+                            class="w-full bg-slate-100/50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all">
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Date</label>
+                            <input type="date" id="eventDate" required
+                                class="w-full bg-slate-100/50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Time</label>
+                            <input type="time" id="eventTime"
+                                class="w-full bg-slate-100/50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Background Theme</label>
+                        <div class="grid grid-cols-4 gap-4 mb-4">
+                            <button type="button"
+                                class="theme-picker h-12 rounded-lg bg-gradient-to-br from-purple-600 to-blue-600 border-2 border-white ring-2 ring-purple-500"
+                                data-theme="purple-blue"></button>
+                            <button type="button"
+                                class="theme-picker h-12 rounded-lg bg-gradient-to-br from-rose-500 to-orange-500 border-2 border-transparent"
+                                data-theme="rose-orange"></button>
+                            <button type="button"
+                                class="theme-picker h-12 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-500 border-2 border-transparent"
+                                data-theme="emerald-teal"></button>
+                            <button type="button"
+                                class="theme-picker h-12 rounded-lg bg-slate-800 border-2 border-transparent"
+                                data-theme="custom-img"></button>
+                        </div>
+                        <input type="url" id="bgImgUrl" placeholder="Or paste background image URL..."
+                            class="w-full bg-slate-100/50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all hidden">
+                    </div>
+
+                    <button type="submit"
+                        class="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-4 rounded-xl font-bold text-lg hover:from-purple-500 hover:to-blue-500 transition-all shadow-xl active:scale-[0.98]">
+                        Generate Countdown 🎉
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Timer Display Section (Single View) -->
+        <section id="timerDisplaySection"
+            class="hidden min-h-[60vh] flex flex-col items-center justify-center text-center">
+            <div class="w-full max-w-4xl mb-6 flex justify-start">
+                <button id="timerBackBtn"
+                    class="flex items-center gap-2 text-slate-500 hover:text-purple-500 transition-colors bg-white/5 px-4 py-2 rounded-lg backdrop-blur-sm border border-white/5 hover:bg-white/10">
+                    <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                    Back to Dashboard
+                </button>
+            </div>
+
+            <div id="countdownContainer"
+                class="glass-card p-12 md:p-20 rounded-[3rem] border border-white/20 shadow-2xl relative overflow-hidden max-w-4xl w-full">
+                <div id="timerBg" class="absolute inset-0 -z-10 opacity-30 transition-all duration-1000"></div>
+
+                <h3 id="displayEventName" class="text-3xl md:text-5xl font-display font-bold mb-12 drop-shadow-sm">Event
+                    Name</h3>
+
+                <div id="countdownTimer" class="flex gap-4 md:gap-8 justify-center">
+                    <div class="time-block">
+                        <span id="days" class="text-5xl md:text-7xl font-bold font-display">00</span>
+                        <span class="text-sm md:text-base uppercase tracking-widest opacity-60">Days</span>
+                    </div>
+                    <div class="time-block">
+                        <span id="hours" class="text-5xl md:text-7xl font-bold font-display">00</span>
+                        <span class="text-sm md:text-base uppercase tracking-widest opacity-60">Hours</span>
+                    </div>
+                    <div class="time-block">
+                        <span id="minutes" class="text-5xl md:text-7xl font-bold font-display">00</span>
+                        <span class="text-sm md:text-base uppercase tracking-widest opacity-60">Mins</span>
+                    </div>
+                    <div class="time-block">
+                        <span id="seconds" class="text-5xl md:text-7xl font-bold font-display text-purple-400">00</span>
+                        <span class="text-sm md:text-base uppercase tracking-widest opacity-60">Secs</span>
+                    </div>
+                </div>
+
+                <div class="mt-16 flex flex-wrap justify-center gap-4">
+                    <button id="shareButton"
+                        class="flex items-center gap-2 bg-gradient-to-r from-purple-600/80 to-blue-600/80 hover:from-purple-500 hover:to-blue-500 text-white px-8 py-4 rounded-full transition-all border border-white/10 shadow-lg active:scale-95 text-lg font-semibold">
+                        <i data-lucide="share-2" class="w-5 h-5"></i>
+                        Share with Friends
+                    </button>
+                    <button id="resetBtn"
+                        class="flex items-center gap-2 bg-white/5 hover:bg-white/10 px-6 py-3 rounded-full transition-all border border-white/5 active:scale-95 text-slate-300">
+                        <i data-lucide="plus" class="w-5 h-5"></i>
+                        New
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-8 text-center text-slate-500 dark:text-slate-400 text-sm">
+        <p>© 2025 Count Down. Celebrate Every Moment.</p>
+    </footer>
+
+    <script>
+        /**
+         * Count Down - Script Logic
+         */
+
+        // Initialize Lucide Icons
+        // Wait for DOM content to be loaded if script runs too early, but since it's at end of body, it should be fine.
+        window.addEventListener('load', () => {
+            if (window.lucide) lucide.createIcons();
+        });
+
+        // State Management
+        const state = {
+            currentTimer: null,
+            timers: [],
+            theme: 'purple-blue',
+            isDarkMode: true
+        };
+
+        // DOM Elements
+        const dashboardSection = document.getElementById('dashboardSection');
+        const createSection = document.getElementById('createSection');
+        const timerDisplaySection = document.getElementById('timerDisplaySection');
+        const eventsGrid = document.getElementById('eventsGrid');
+        const countdownForm = document.getElementById('countdownForm');
+        const themePickers = document.querySelectorAll('.theme-picker');
+        const bgImgInput = document.getElementById('bgImgUrl');
+
+        // --- Navigation ---
+
+        function showSection(sectionId) {
+            [dashboardSection, createSection, timerDisplaySection].forEach(s => s.classList.add('hidden'));
+            document.getElementById(sectionId).classList.remove('hidden');
+            document.getElementById(sectionId).classList.add('fade-in');
+
+            // Refresh icons if needed
+            if (window.lucide) lucide.createIcons();
+
+            // Clear interval if leaving timer section
+            if (sectionId !== 'timerDisplaySection') {
+                clearInterval(countdownInterval);
+                // Clean URL params when going back to dashboard/create
+                if (window.history.pushState) {
+                    window.history.pushState({}, '', window.location.pathname);
+                }
+            }
+        }
+
+        document.getElementById('createNavBtn').addEventListener('click', () => showSection('createSection'));
+        document.getElementById('backBtn').addEventListener('click', () => showSection('dashboardSection'));
+        // New Back Button Logic
+        const timerBackBtn = document.getElementById('timerBackBtn');
+        if (timerBackBtn) {
+            timerBackBtn.addEventListener('click', () => {
+                showSection('dashboardSection');
+                // Stop the timer when going back
+                clearInterval(countdownInterval);
+                // Clear URL params
+                if (window.history.pushState) {
+                    window.history.pushState({}, '', window.location.pathname);
+                }
+            });
+        }
+        document.getElementById('resetBtn').addEventListener('click', () => showSection('createSection'));
+
+        // --- Theme Management ---
+
+        const themeToggle = document.getElementById('themeToggle');
+        themeToggle.addEventListener('click', () => {
+            state.isDarkMode = !state.isDarkMode;
+            document.documentElement.classList.toggle('dark', state.isDarkMode);
+        });
+
+        themePickers.forEach(picker => {
+            picker.addEventListener('click', () => {
+                themePickers.forEach(p => p.classList.remove('ring-purple-500', 'border-white', 'ring-2'));
+                picker.classList.add('ring-purple-500', 'border-white', 'ring-2');
+
+                state.theme = picker.dataset.theme;
+                if (state.theme === 'custom-img') {
+                    bgImgInput.classList.remove('hidden');
+                } else {
+                    bgImgInput.classList.add('hidden');
+                }
+            });
+        });
+
+        // --- Preset Data ---
+        // Month is 0-indexed (0=Jan, 3=April)
+        const presetEvents = [
+            { name: "New Year 2026", date: new Date(2026, 0, 1).toString(), icon: "🎉", theme: "rose-orange" },
+            { name: "Ramadan 2026", date: new Date(2026, 1, 18).toString(), icon: "🌙", theme: "purple-blue" },
+            { name: "Eid-ul-Fitr 2026", date: new Date(2026, 2, 20).toString(), icon: "🌙", theme: "emerald-teal" },
+            { name: "Pohela Boishakh", date: new Date(2026, 3, 14).toString(), icon: "🌺", theme: "rose-orange" }
+        ];
+
+        function renderDashboard() {
+            eventsGrid.innerHTML = '';
+            presetEvents.forEach(event => {
+                const card = document.createElement('div');
+                card.className = 'glass-card p-6 rounded-2xl cursor-pointer group';
+                // Format the date string nicely
+                const dateObj = new Date(event.date);
+                card.innerHTML = `
+                    <div class="flex items-start justify-between mb-4">
+                        <span class="text-4xl">${event.icon}</span>
+                        <i data-lucide="arrow-right" class="w-5 h-5 text-slate-400 group-hover:text-purple-500 group-hover:translate-x-1 transition-all"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-1">${event.name}</h3>
+                    <p class="text-sm text-slate-500 dark:text-slate-400">${dateObj.toLocaleDateString()}</p>
+                `;
+                card.onclick = () => startCountdown(event.name, event.date, event.theme);
+                eventsGrid.appendChild(card);
+            });
+            if (window.lucide) lucide.createIcons();
+        }
+
+        // --- Timer Logic ---
+
+        let countdownInterval;
+
+        function startCountdown(name, targetDate, theme, bgImg = '') {
+            clearInterval(countdownInterval);
+            showSection('timerDisplaySection');
+
+            document.getElementById('displayEventName').textContent = name;
+            const timerBg = document.getElementById('timerBg');
+
+            // Apply Theme
+            timerBg.className = 'absolute inset-0 -z-10 opacity-30 transition-all duration-1000';
+            if (bgImg) {
+                timerBg.style.backgroundImage = `url('${bgImg}')`;
+                timerBg.style.backgroundSize = 'cover';
+                timerBg.style.backgroundPosition = 'center';
+            } else {
+                timerBg.style.backgroundImage = 'none';
+                const gradients = {
+                    'purple-blue': 'bg-gradient-to-br from-purple-600 to-blue-600',
+                    'rose-orange': 'bg-gradient-to-br from-rose-500 to-orange-500',
+                    'emerald-teal': 'bg-gradient-to-br from-emerald-500 to-teal-500'
+                };
+                timerBg.classList.add(gradients[theme] || gradients['purple-blue']);
+            }
+
+            // Force date parsing to be robust
+            let target = new Date(targetDate).getTime();
+            if (isNaN(target)) {
+                // Try parsing manually if ISO fails
+                target = Date.parse(targetDate);
+            }
+
+            // DOM Elements - Fetch only once
+            const daysEl = document.getElementById('days');
+            const hoursEl = document.getElementById('hours');
+            const minsEl = document.getElementById('minutes');
+            const secsEl = document.getElementById('seconds');
+
+            // Debug Element - Create if doesn't exist
+            let debugEl = document.getElementById('debug-info');
+            if (!debugEl) {
+                debugEl = document.createElement('div');
+                debugEl.id = 'debug-info';
+                debugEl.className = 'absolute bottom-4 left-4 text-xs text-slate-500 font-mono text-left bg-black/20 p-2 rounded';
+                document.getElementById('countdownContainer').appendChild(debugEl);
+            }
+
+            function update() {
+                const now = new Date().getTime();
+                const distance = target - now;
+
+                // VISUAL DEBUGGING - Show exactly what's happening
+                debugEl.innerHTML = `
+                    Target: ${new Date(target).toLocaleString()}<br>
+                    Now:    ${new Date(now).toLocaleString()}<br>
+                    Diff:   ${distance}ms
+                `;
+
+                if (distance < 0) {
+                    clearInterval(countdownInterval);
+                    daysEl.textContent = '00';
+                    hoursEl.textContent = '00';
+                    minsEl.textContent = '00';
+                    secsEl.textContent = '00';
+
+                    // Only trigger celebration if it JUST finished (within last second) to avoid loop
+                    if (distance > -2000) triggerCelebration();
+
+                    debugEl.innerHTML += "<br>STATUS: FINISHED";
+                    return;
+                }
+
+                const d = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const s = Math.floor((distance % (1000 * 60)) / 1000);
+
+                daysEl.textContent = String(d).padStart(2, '0');
+                hoursEl.textContent = String(h).padStart(2, '0');
+                minsEl.textContent = String(m).padStart(2, '0');
+                secsEl.textContent = String(s).padStart(2, '0');
+            }
+
+            // Initial call
+            update();
+            // Start interval
+            countdownInterval = setInterval(update, 1000);
+
+            // Update URL logic to be persistent
+            const params = new URLSearchParams({
+                name: btoa(encodeURIComponent(name)),
+                date: btoa(targetDate),
+                theme: theme,
+                img: btoa(bgImg)
+            });
+            if (window.history.pushState) {
+                const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?' + params.toString();
+                window.history.pushState({ path: newUrl }, '', newUrl);
+            }
+        }
+
+        function triggerCelebration() {
+            if (window.confetti) {
+                confetti({
+                    particleCount: 150,
+                    spread: 70,
+                    origin: { y: 0.6 },
+                    colors: ['#a855f7', '#3b82f6', '#f43f5e', '#fb923c']
+                });
+            }
+        }
+
+        // --- Form Handling ---
+
+        countdownForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('eventName').value;
+            const date = document.getElementById('eventDate').value;
+            const time = document.getElementById('eventTime').value || "00:00";
+            const bgImg = bgImgInput.value;
+
+            // Ensure accurate ISO string construction
+            const targetDate = `${date}T${time}:00`;
+            startCountdown(name, targetDate, state.theme, bgImg);
+        });
+
+        // --- Enhanced Sharing ---
+
+        document.getElementById('shareButton').addEventListener('click', async () => {
+            const shareData = {
+                title: 'Count Down',
+                text: `Check out the countdown for ${document.getElementById('displayEventName').textContent}!`,
+                url: window.location.href
+            };
+
+            if (navigator.share) {
+                try {
+                    await navigator.share(shareData);
+                } catch (err) {
+                    console.log('Share canceled or failed', err);
+                }
+            } else {
+                // Fallback to Clipboard
+                navigator.clipboard.writeText(window.location.href);
+                const btn = document.getElementById('shareButton');
+                const originalHTML = btn.innerHTML;
+
+                btn.innerHTML = '<i data-lucide="check" class="w-5 h-5"></i> Link Copied!';
+                btn.classList.add('bg-green-600', 'border-green-500');
+                btn.classList.remove('bg-gradient-to-r'); // Temp remove gradient
+
+                if (window.lucide) lucide.createIcons();
+
+                setTimeout(() => {
+                    btn.innerHTML = originalHTML;
+                    btn.classList.remove('bg-green-600', 'border-green-500');
+                    btn.classList.add('bg-gradient-to-r');
+                    if (window.lucide) lucide.createIcons();
+                }, 3000);
+            }
+        });
+
+        // --- URL Check on Load ---
+
+        function checkUrlParams() {
+            const params = new URLSearchParams(window.location.search);
+            if (params.has('name') && params.has('date')) {
+                try {
+                    const name = decodeURIComponent(atob(params.get('name')));
+                    const date = atob(params.get('date'));
+                    const theme = params.get('theme') || 'purple-blue';
+                    const img = params.get('img') ? atob(params.get('img')) : '';
+                    startCountdown(name, date, theme, img);
+                } catch (e) {
+                    console.error("Invalid share link", e);
+                    renderDashboard();
+                }
+            } else {
+                renderDashboard();
+            }
+        }
+
+        // Init
+        checkUrlParams();
+    </script>
+</body>
+
+</html>

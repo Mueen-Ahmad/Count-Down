@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Countdown Timer Test</title>
+    <style>
+        body {
+            background: #0f172a;
+            color: white;
+            font-family: Arial, sans-serif;
+            padding: 40px;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .timer {
+            font-size: 72px;
+            font-weight: bold;
+            margin: 20px 0;
+            font-family: monospace;
+        }
+
+        .debug {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+
+        .debug div {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Countdown Timer Test (Vanilla JS)</h1>
+        <p>Testing with: <strong>New Year 2026 (2026-01-01 00:00:00)</strong></p>
+
+        <div class="timer" id="timer">Loading...</div>
+
+        <div class="debug">
+            <h3>Debug Information:</h3>
+            <div id="debug"></div>
+        </div>
+    </div>
+
+    <script>
+        // Target date: New Year 2026
+        const targetDate = new Date('2026-01-01T00:00:00').getTime();
+
+        function updateTimer() {
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+
+            // Calculate time
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            // Pad with zeros
+            const pad = (num) => String(num).padStart(2, '0');
+
+            // Update display
+            document.getElementById('timer').textContent =
+                `${pad(days)}:${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+
+            // Update debug info
+            document.getElementById('debug').innerHTML = `
+                <div><strong>Target Date:</strong> ${new Date(targetDate).toString()}</div>
+                <div><strong>Current Time:</strong> ${new Date(now).toString()}</div>
+                <div><strong>Distance (ms):</strong> ${distance}</div>
+                <div><strong>Distance (days):</strong> ${(distance / (1000 * 60 * 60 * 24)).toFixed(2)}</div>
+                <div><strong>Days:</strong> ${days}</div>
+                <div><strong>Hours:</strong> ${hours}</div>
+                <div><strong>Minutes:</strong> ${minutes}</div>
+                <div><strong>Seconds:</strong> ${seconds}</div>
+                <div><strong>Status:</strong> ${distance < 0 ? 'FINISHED' : 'RUNNING'}</div>
+            `;
+        }
+
+        // Update immediately
+        updateTimer();
+
+        // Update every second
+        setInterval(updateTimer, 1000);
+    </script>
+</body>
+
+</html>
