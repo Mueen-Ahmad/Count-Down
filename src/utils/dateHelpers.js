@@ -80,11 +80,15 @@ export function padZero(num) {
  */
 export function encodeCountdownData(data) {
     const params = new URLSearchParams({
-        name: btoa(encodeURIComponent(data.name)),
-        date: btoa(data.date),
-        theme: data.theme,
-        img: btoa(data.bgImg || '')
+        name: data.name,
+        date: data.date,
+        theme: data.theme || 'purple-blue'
     });
+
+    if (data.bgImg) {
+        params.append('img', data.bgImg);
+    }
+
     return params.toString();
 }
 
@@ -95,15 +99,18 @@ export function encodeCountdownData(data) {
  */
 export function decodeCountdownData(params) {
     try {
-        if (!params.has('name') || !params.has('date')) {
+        const name = params.get('name');
+        const date = params.get('date');
+
+        if (!name || !date) {
             return null;
         }
 
         return {
-            name: decodeURIComponent(atob(params.get('name'))),
-            date: atob(params.get('date')),
+            name: name,
+            date: date,
             theme: params.get('theme') || 'purple-blue',
-            bgImg: params.get('img') ? atob(params.get('img')) : ''
+            bgImg: params.get('img') || ''
         };
     } catch (error) {
         console.error('Error decoding countdown data:', error);

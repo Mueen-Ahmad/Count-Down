@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import Navigation from './components/Navigation';
 import BackgroundDecor from './components/BackgroundDecor';
@@ -7,6 +8,15 @@ import TimerDisplay from './pages/TimerDisplay';
 import TestTimer from './pages/TestTimer';
 
 export default function App() {
+    // Handle root-level query params (useful for shared links that might miss the hash)
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        if (params.has('name') && params.has('date')) {
+            const hashParams = params.toString();
+            window.location.href = `${window.location.pathname}#/timer?${hashParams}`;
+        }
+    }, []);
+
     return (
         <Router>
             <div className="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-300 min-h-screen font-sans">

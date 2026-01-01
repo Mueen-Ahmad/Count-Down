@@ -15,19 +15,25 @@ export default function TimerDisplay() {
     const [hasTriggeredConfetti, setHasTriggeredConfetti] = useState(false);
 
     useEffect(() => {
-        // Try to load from URL params first
         const urlData = decodeCountdownData(searchParams);
-        if (urlData) {
-            setCountdown(urlData);
-            startCountdown(urlData);
-        } else if (currentCountdown) {
-            setCountdown(currentCountdown);
 
-            // Update URL with countdown data
+        if (urlData) {
+            // Priority 1: URL has data
+            setCountdown(urlData);
+
+            // Sync with context if needed (to keep theme/state consistent across refreshes)
+            if (!currentCountdown ||
+                currentCountdown.name !== urlData.name ||
+                currentCountdown.date !== urlData.date) {
+                startCountdown(urlData);
+            }
+        } else if (currentCountdown) {
+            // Priority 2: Context has data (came from a page that didn't set params yet)
+            setCountdown(currentCountdown);
             const params = encodeCountdownData(currentCountdown);
-            window.history.pushState({}, '', `?${params}`);
+            navigate(`/timer?${params}`, { replace: true });
         } else {
-            // No countdown data, redirect to dashboard
+            // Fallback: Nothing found, go home
             navigate('/');
         }
     }, [searchParams, currentCountdown, navigate, startCountdown]);

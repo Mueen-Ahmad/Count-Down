@@ -4,6 +4,8 @@ import { ChevronLeft } from 'lucide-react';
 import ThemePicker from '../components/ThemePicker';
 import { useApp } from '../contexts/AppContext';
 
+import { encodeCountdownData } from '../utils/dateHelpers';
+
 export default function CreateCountdown() {
     const navigate = useNavigate();
     const { startCountdown, setSelectedTheme, selectedTheme } = useApp();
@@ -24,14 +26,17 @@ export default function CreateCountdown() {
 
         const targetDate = `${formData.eventDate}T${formData.eventTime || '00:00'}:00`;
 
-        startCountdown({
+        const countdownData = {
             name: formData.eventName,
             date: targetDate,
             theme: selectedTheme,
             bgImg: selectedTheme === 'custom-img' ? formData.bgImgUrl : ''
-        });
+        };
 
-        navigate('/timer');
+        startCountdown(countdownData);
+
+        const queryParams = encodeCountdownData(countdownData);
+        navigate(`/timer?${queryParams}`);
     };
 
     return (

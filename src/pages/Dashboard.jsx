@@ -2,19 +2,24 @@ import { useNavigate } from 'react-router-dom';
 import EventCard from '../components/EventCard';
 import { presetEvents } from '../utils/presetEvents';
 import { useApp } from '../contexts/AppContext';
+import { encodeCountdownData } from '../utils/dateHelpers';
 
 export default function Dashboard() {
     const navigate = useNavigate();
     const { startCountdown } = useApp();
 
     const handleEventClick = (event) => {
-        startCountdown({
+        const countdownData = {
             name: event.name,
             date: event.date,
             theme: event.theme,
             bgImg: ''
-        });
-        navigate('/timer');
+        };
+
+        startCountdown(countdownData);
+
+        const queryParams = encodeCountdownData(countdownData);
+        navigate(`/timer?${queryParams}`);
     };
 
     return (
