@@ -110,7 +110,7 @@ export default function TimerDisplay() {
                 </button>
             </div>
 
-            <div className="glass-card p-12 md:p-20 rounded-[3rem] border border-white/20 shadow-2xl relative overflow-hidden max-w-4xl w-full">
+            <div className="glass-card p-4 sm:p-12 md:p-20 rounded-[1.5rem] sm:rounded-[3rem] border border-white/20 shadow-2xl relative overflow-hidden max-w-4xl w-full">
                 {/* Background */}
                 <div
                     className={`absolute inset-0 -z-10 opacity-30 transition-all duration-1000 ${countdown.bgImg ? '' : getThemeClasses()

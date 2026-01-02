@@ -22,36 +22,36 @@ export default function CountdownTimer({ targetDate, showDebug = false }) {
                 </div>
             )}
 
-            <div className="flex gap-4 md:gap-8 justify-center">
+            <div className="flex gap-1 sm:gap-4 md:gap-8 justify-center overflow-x-auto pb-2 sm:pb-0">
                 <div className="time-block">
-                    <span className="text-5xl md:text-7xl font-bold font-display">
+                    <span className="text-3xl sm:text-5xl md:text-7xl font-bold font-display">
                         {padZero(days)}
                     </span>
-                    <span className="text-sm md:text-base uppercase tracking-widest opacity-60">
+                    <span className="text-[10px] sm:text-sm md:text-base uppercase tracking-widest opacity-60">
                         Days
                     </span>
                 </div>
                 <div className="time-block">
-                    <span className="text-5xl md:text-7xl font-bold font-display">
+                    <span className="text-3xl sm:text-5xl md:text-7xl font-bold font-display">
                         {padZero(hours)}
                     </span>
-                    <span className="text-sm md:text-base uppercase tracking-widest opacity-60">
+                    <span className="text-[10px] sm:text-sm md:text-base uppercase tracking-widest opacity-60">
                         Hours
                     </span>
                 </div>
                 <div className="time-block">
-                    <span className="text-5xl md:text-7xl font-bold font-display">
+                    <span className="text-3xl sm:text-5xl md:text-7xl font-bold font-display">
                         {padZero(minutes)}
                     </span>
-                    <span className="text-sm md:text-base uppercase tracking-widest opacity-60">
+                    <span className="text-[10px] sm:text-sm md:text-base uppercase tracking-widest opacity-60">
                         Mins
                     </span>
                 </div>
                 <div className="time-block">
-                    <span className="text-5xl md:text-7xl font-bold font-display text-purple-400">
+                    <span className="text-3xl sm:text-5xl md:text-7xl font-bold font-display text-purple-400">
                         {padZero(seconds)}
                     </span>
-                    <span className="text-sm md:text-base uppercase tracking-widest opacity-60">
+                    <span className="text-[10px] sm:text-sm md:text-base uppercase tracking-widest opacity-60">
                         Secs
                     </span>
                 </div>
